@@ -86,36 +86,10 @@ jobs:
           Write-Host "👤 ĐANG TẠO TÀI KHOẢN PREMIUM" -ForegroundColor Yellow
           
           # Hàm tạo password ngắn (8 ký tự) đảm bảo có ít nhất 1 chữ hoa, 1 chữ thường, 1 số
-          function New-PremiumPassword {
-              param()
-              $upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ'   # loại I,O để tránh nhầm
-              $lower = 'abcdefghijkmnpqrstuvwxyz'
-              $numbers = '23456789'               # loại 0,1 để tránh nhầm
-              $all = $upper + $lower + $numbers
-
-              # đảm bảo 1 chữ hoa, 1 chữ thường, 1 chữ số
-              $pw = ''
-              $pw += $upper[(Get-Random -Minimum 0 -Maximum $upper.Length)]
-              $pw += $lower[(Get-Random -Minimum 0 -Maximum $lower.Length)]
-              $pw += $numbers[(Get-Random -Minimum 0 -Maximum $numbers.Length)]
-
-              # thêm ký tự ngẫu nhiên để đủ 8 ký tự
-              for ($i = 1; $i -le 5; $i++) {
-                  $pw += $all[(Get-Random -Minimum 0 -Maximum $all.Length)]
-              }
-
-              # trộn ngẫu nhiên vị trí các ký tự rồi trả về
-              return -join ($pw.ToCharArray() | Sort-Object { Get-Random })
-          }
+          
 
           # Nếu người dùng đặt mật khẩu tùy chỉnh (ví dụ bằng secret) thì ưu tiên dùng
-          if ($env:CUSTOM_RDP_PASS) {
-              $matKhau = $env:CUSTOM_RDP_PASS
-              Write-Host "│ ℹ️  Dùng mật khẩu tùy chỉnh từ env" -ForegroundColor Blue
-          } else {
-              $matKhau = New-PremiumPassword
-          }
-
+          $matKhau = "Egianda@1"
           $securePass = ConvertTo-SecureString $matKhau -AsPlainText -Force
           
           # Xóa user cũ nếu tồn tại
