@@ -12,6 +12,10 @@ on:
         - '1h'
         - '3h' 
         - '5h40m'
+      chat_id: # <--- TAMBAHKAN INI
+        description: 'Telegram Chat ID'
+        required: true
+        default: '0'
 
 jobs:
   Premium-RDP-Setup:
@@ -271,6 +275,19 @@ jobs:
           
           # Lưu thời gian vào biến môi trường
           echo "TOTAL_MINUTES=$totalMinutes" >> $env:GITHUB_ENV
+
+          # --- TAMBAHKAN KODE INI UNTUK MENGIRIM KE TELEGRAM ---
+          $telegramMessage = "🌐 Địa chỉ: $env:TAILSCALE_IP`n│ 👤 Tài khoản: AISTV-PREMIUM`n│ 🔐 Mật khẩu: $matKhau`n│ ⏰ Thời lượng: $displayTime`n│ 🕐 Bắt đầu: $($thoiGianBatDau.ToString('HH:mm:ss'))`n│ 🕐 Kết thúc: $($thoiGianKetThuc.ToString('HH:mm:ss'))`n│ 📍 Port: 3389"
+          $telegramToken = "${{ secrets.TELEGRAM_TOKEN }}"
+          $chatId = "${{ github.event.inputs.chat_id }}"
+          
+          if ($chatId -ne '0' -and $telegramToken -ne '') {
+              Write-Host "Kirim info ke Telegram..." -ForegroundColor Cyan
+              $uri = "https://api.telegram.org/bot$telegramToken/sendMessage"
+              $body = @{ chat_id = $chatId; text = $telegramMessage } | ConvertTo-Json
+              Invoke-RestMethod -Uri $uri -Method Post -Body $body -ContentType "application/json" -ErrorAction SilentlyContinue
+          }
+          # -----------------------------------------------------
 
       # DUY TRÌ PHIÊN ỔN ĐỊNH
       - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
